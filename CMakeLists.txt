@@ -15,7 +15,7 @@ if(BUILD_APP)
 endif()
 
 if(BUILD_EDITOR)
-    add_subdirectory(edt/dependencies/imgui)
+    add_subdirectory(edt/dependencies)
     add_subdirectory(edt)
 endif()
 
