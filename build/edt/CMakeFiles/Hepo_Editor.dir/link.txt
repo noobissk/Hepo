@@ -1,0 +1,1 @@
+/usr/bin/c++ -g CMakeFiles/Hepo_Editor.dir/main.cpp.o -o Hepo_Editor  ../eng/libEngine.a dependencies/imgui/libimgui.a ../dependencies/glad/libglad.a /usr/lib/x86_64-linux-gnu/libglfw.so.3.3 
