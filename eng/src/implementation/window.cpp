@@ -67,13 +67,7 @@ void AppWindow::close() {
     glClear(GL_COLOR_BUFFER_BIT);
     // glfwDestroyWindow(window);
 }
-// bool AppWindow::shouldClose() {
-//     if (glfwWindowShouldClose(window)) {
-//         glfwDestroyWindow(window);
-//         return true;
-//     }
-//     return false;
-// }
+
 AppWindow::~AppWindow()
 {
     if (window)

@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "istorage.h"
 #include "ecs_entity.h"
 #include "ecs_storage.h"
 
@@ -20,21 +21,64 @@ public:
 
     std::string name;
 
-    template<typename T>
-    ECS_STORAGE<T>& getStorage() {
-        auto type = std::type_index(typeid(T));
+    template<typename Component>
+    Component* getComponent(Entity e)
+    {
+        auto it = components.find(std::type_index(typeid(Component)));
+
+        if (it == components.end())
+            return nullptr;
+
+        return dynamic_cast<ECS_STORAGE<Component>*>(it->second.get())->get(e);
+    }
+
+    template<typename Component>
+    void addComponent(Entity e, const Component& component)
+    {
+        auto type = std::type_index(typeid(Component));
 
         auto it = components.find(type);
-        if (it == components.end()) {
-            auto inserted = components.emplace(
-                type,
-                std::make_unique<ECS_STORAGE<T>>()
-            );
-            return *static_cast<ECS_STORAGE<T>*>(inserted.first->second.get());
-        }
 
-        return *static_cast<ECS_STORAGE<T>*>(it->second.get());
+        if (it == components.end())
+        {
+            auto storage = std::make_unique<ECS_STORAGE<Component>>();
+
+            storage->add(e, component);
+
+            components.emplace(type, std::move(storage));
+        }
+        else
+        {
+            auto* storage =
+                dynamic_cast<ECS_STORAGE<Component>*>(it->second.get());
+
+            if (storage)
+            {
+                storage->add(e, component);
+            }
+        }
     }
+
+    template<typename Component>
+    void removeComponent(Entity e)
+    {
+        auto it = components.find(std::type_index(typeid(Component)));
+
+        if (it != components.end())
+        {
+            it->second->remove(e);
+        }
+    }
+
+    template<typename Component>
+    bool hasComponent(Entity e)
+    {
+        auto it = components.find(std::type_index(typeid(Component)));
+
+        return it != components.end() &&
+            it->second->has(e);
+    }
+
 
     // Entity management
     Entity createEntity() {
@@ -67,8 +111,8 @@ public:
         return id < generations.size() && id == EntityGeneration(e);
     }
 
-private:
     std::unordered_map<std::type_index, std::unique_ptr<IStorage>> components;
+private:
 
 
     // Entity management

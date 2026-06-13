@@ -4,11 +4,25 @@ add_library(Engine STATIC
     # src/ecs.cpp
 )
 
+include(FetchContent)
+
+FetchContent_Declare(
+    tomlplusplus
+    GIT_REPOSITORY https://github.com/marzer/tomlplusplus.git
+    GIT_TAG v3.4.0
+)
+
+FetchContent_MakeAvailable(tomlplusplus)
+
+target_link_libraries(Engine PRIVATE tomlplusplus::tomlplusplus)
+
 target_link_libraries(Engine
     PUBLIC
         glfw
         glad
 )
+
+
 
 target_include_directories(Engine
     PUBLIC
